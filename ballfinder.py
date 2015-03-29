@@ -16,8 +16,12 @@ def ball_position(img):
     ball_color = (255, 177, 38)
     ball_img = img.colorDistance((255,177,38)).binarize(40)
     blobs = filter(lambda b:b.isCircle(0.3), ball_img.findBlobs())
-    x = blobs[-1].x
-    y = blobs[-1].y
+    if not blobs:
+        x = -1
+        y = -1
+    else:
+        x = blobs[-1].x
+        y = blobs[-1].y
     return x, y
 
 
