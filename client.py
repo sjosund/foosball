@@ -14,7 +14,7 @@ import argparse
 class SlowSquareClientProtocol(WebSocketClientProtocol):
 
     def onOpen(self):
-        for i in range(10000):
+        for i in range(100000):
             x = 10. * random.random()
             self.sendMessage(json.dumps(x).encode('utf8'))
 
