@@ -5,6 +5,11 @@ import json
 import random
 from time import sleep
 
+import sys
+
+from twisted.python import log
+from twisted.internet import reactor
+import argparse
 
 class SlowSquareClientProtocol(WebSocketClientProtocol):
 
@@ -26,15 +31,16 @@ class SlowSquareClientProtocol(WebSocketClientProtocol):
 
 if __name__ == '__main__':
 
-    import sys
 
-    from twisted.python import log
-    from twisted.internet import reactor
+    parser = argparse.ArgumentParser()
+    parser.add_argument('ip', type=str)
+    parser.add_argument('port', type=int)
+    args = parser.parse_args()
 
     log.startLogging(sys.stdout)
 
-    factory = WebSocketClientFactory("ws://localhost:9000", debug=False)
+    factory = WebSocketClientFactory("ws://{}:{}".format(args.ip, args.port), debug=False)
     factory.protocol = SlowSquareClientProtocol
 
-    reactor.connectTCP("127.0.0.1", 9000, factory)
+    reactor.connectTCP(args.ip, args.port, factory)
     reactor.run()

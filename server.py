@@ -6,6 +6,11 @@ from twisted.internet.defer import Deferred, \
     inlineCallbacks, \
     returnValue
 
+import sys
+
+from twisted.python import log
+from twisted.internet import reactor
+import argparse
 
 def sleep(delay):
     d = Deferred()
@@ -37,15 +42,19 @@ class SlowSquareServerProtocol(WebSocketServerProtocol):
 
 if __name__ == '__main__':
 
-    import sys
-
-    from twisted.python import log
-    from twisted.internet import reactor
+    parser = argparse.ArgumentParser()
+    parser.add_argument('ip', type=str)
+    parser.add_argument('port', type=int)
+    args = parser.parse_args()
 
     log.startLogging(sys.stdout)
 
-    factory = WebSocketServerFactory("ws://localhost:9000", debug=False)
+
+    factory = WebSocketServerFactory(
+        "ws://{}:{}".format(args.ip, args.port),
+        debug=False
+    )
     factory.protocol = SlowSquareServerProtocol
 
-    reactor.listenTCP(9000, factory)
+    reactor.listenTCP(args.port, factory)
     reactor.run()
