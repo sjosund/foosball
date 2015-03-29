@@ -11,12 +11,16 @@ from twisted.python import log
 from twisted.internet import reactor
 import argparse
 
-class SlowSquareClientProtocol(WebSocketClientProtocol):
+import SimpleCV as cv
+from ballfinder import ball_position
 
+class BallTracker(WebSocketClientProtocol):
     def onOpen(self):
-        for i in range(100000):
-            x = 10. * random.random()
-            self.sendMessage(json.dumps(x).encode('utf8'))
+        cam = cv.Camera(0, prop_set={'width':640, 'heigth':480})
+        while True:
+            img = cam.getImage()
+            x, y = ball_position(img)
+            self.sendMessage(json.dumps((x, y)).encode('utf8'))
 
     def onMessage(self, payload, isBinary):
         if not isBinary:
